@@ -1,28 +1,28 @@
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-import settings
+
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
 logging.basicConfig(filename = "bot.log", level = logging.INFO)
 
-def greet_user(update, context):
+async def greet_user(update: Update, context: CallbackContext):
     print("вызван /start")
-    update.message.reply_text("Привет, друг!")
+    await update.message.reply_text("Привет, друг!")
 
-def talk_to_me(update, context):
+async def talk_to_me(update: Update, context: CallbackContext):
     text = update.message.text
     print(text)
-    update.message.reply_text(text)
+    await update.message.reply_text(text)
 
 def main():
-    mybot = Updater(settings.API_KEY, use_context=True)
+    mybot = Application.builder().token("5756424701:AAGPPEKizgC2zGEX7jYxH4uyfEySccWgdhw").build()
 
-    db = mybot.dispatcher
-    db.add_handler(CommandHandler("start", greet_user))
-    db.add_handler(MessageHandler(Filters.text, talk_to_me))
+
+    mybot.add_handler(CommandHandler("start", greet_user))
+    mybot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, talk_to_me))
 
     logging.info("запуск прошёл успешно")
-    mybot.start_polling()
-    mybot.idle()
+    mybot.run_polling()
 
 if __name__=="__main__":
     main()    
